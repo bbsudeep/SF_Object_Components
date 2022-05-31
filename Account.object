@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?> test2
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
         <actionOverrides>
-        <actionName>CallHighlightAction</actionName>test
+        <actionName>CallHighlightAction</actionName>
         <type>Default</type>
     </actionOverrides>Best
     <actionOverrides>
