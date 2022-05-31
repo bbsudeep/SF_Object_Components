@@ -21,7 +21,7 @@
         <sharedFrom>
             <allInternalUsers></allInternalUsers>
         </sharedFrom>
-    </sharingOwnerRules>
+    </sharingOwnerRules>t
     <sharingOwnerRules>
         <fullName>r3</fullName>
         <accessLevel>Read</accessLevel>
