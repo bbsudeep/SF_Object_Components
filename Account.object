@@ -34,7 +34,7 @@
     </actionOverrides>
     <actionOverrides>
         <actionName>Delete</actionName>
-        <formFactor>Small</formFactor>
+        <formFactor>Small1</formFactor>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
