@@ -5,12 +5,12 @@
         <type>Default</type>
     </actionOverrides>Best
     <actionOverrides>
-        <actionName>CallHighlightAction</actionName>
+        <actionName>CallHighlightAction1</actionName>
         <formFactor>Small</formFactor>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
-        <actionName>CancelEdit</actionName>
+        <actionName>CancelEdit1</actionName>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
