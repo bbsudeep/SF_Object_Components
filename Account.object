@@ -43,7 +43,7 @@
     </actionOverrides>
     <actionOverrides>
         <actionName>Edit</actionName>
-        <formFactor>Large</formFactor>
+        <formFactor>Large1</formFactor>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
