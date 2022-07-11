@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+<<<<<<< HEAD
 
     <actionOverrides>
 
@@ -16,14 +17,22 @@
 
         <formFactor>Large</formFactor>
 
+=======
+        <actionOverrides>
+        <actionName>CallHighlightActio1n</actionName>
+>>>>>>> 5e0848883f55701c2524ce6e3968c26e287ac79d
         <type>Default</type>
 
     </actionOverrides>
 
     <actionOverrides>
+<<<<<<< HEAD
 
         <actionName>CallHighlightAction</actionName>
 
+=======
+        <actionName>CallHighlightAction145</actionName>
+>>>>>>> 5e0848883f55701c2524ce6e3968c26e287ac79d
         <formFactor>Small</formFactor>
 
         <type>Default</type>
