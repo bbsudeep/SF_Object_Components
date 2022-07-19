@@ -5,7 +5,11 @@
 
     <actionOverrides>
 
+<<<<<<< HEAD
         <actionName>CallHighlightActions1</actionName>
+=======
+        <actionName>CallHighlightActionsqwertest1</actionName>
+>>>>>>> 9fa3760479e4b50fe6d1f3ab186bf65127b0173e
 
         <type>Default</type>
 
