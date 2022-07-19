@@ -13,7 +13,7 @@
 
     <actionOverrides>
 
-        <actionName>CallHighlightAction</actionName>
+        <actionName>CallHighlightActiontest</actionName>
 
         <formFactor>Large</formFactor>
 
