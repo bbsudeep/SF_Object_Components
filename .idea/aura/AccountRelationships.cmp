@@ -1,0 +1,443 @@
+<!--
+
+  - Copyright (c) 2016 by Align Technology Inc..  All Rights Reserved.
+
+  - This software is the confidential and proprietary information of
+
+  - Align Technology Inc. ("Confidential Information").
+
+  - You shall not disclose such Confidential Information and shall use it
+
+  - only in accordance with the terms of the license agreement you entered
+
+  - into with Align Technology Inc.
+
+  -
+
+  Purpose:
+
+  This component is for adding and viewing account relationships
+
+  ========================================================================================================================
+
+  History
+
+  VERSION         AUTHOR                          DATE                DETAIL
+
+  1.0             Gana Prasad                     3/15/2019           Initial development
+
+-->
+
+<aura:component implements="lightning:actionOverride,forceCommunity:availableForAllPageTypes,force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes" controller="AccountRelationshipsController" access="global">
+
+    <!--Declare Event Handlers-->
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+
+    <!--Declare Attributes-->
+
+    <aura:attribute name="recordId" type="String"/>
+
+    <aura:attribute name="accountRelationships" type="AccountRelationshipsController.AccountRelationshipWrapper[]" />
+
+    <aura:attribute name="accountRelationship" type="Object" />
+
+    <aura:attribute name="eligibleRelationshipNames" type="List" />
+
+    <aura:attribute name="showSpinner" type="Boolean"/>
+
+    <aura:attribute name="showMessage" type="String" />
+
+    <aura:attribute name="messageType" type="String" />
+
+    <aura:attribute name="severity" type="String" />
+
+    <aura:attribute name="userTheme" type="String" />
+
+    <aura:attribute name="selectedToAccount" type="String" />
+
+    <aura:attribute name="selectedRelType" type="String" />
+
+    <aura:attribute name="filterCondition" type="String" />
+
+    <aura:attribute name="defaultText" type="String" />
+
+    <aura:attribute name="eligibleAccountType" type="String" />
+
+    <aura:attribute name="existingAccountType" type="String" />
+
+    <aura:attribute name="isAccountEditable" type="Boolean" default="true"/>
+
+    <aura:attribute name="isCreateNew" type="Boolean" default="false"/>
+
+    <aura:attribute name="isEditRel" type="boolean"/>
+
+    <aura:attribute name="isViewRel" type="boolean"/>
+
+    <aura:attribute name="editRelId" type="id"/>
+
+    <aura:attribute name="viewRelId" type="id"/>
+
+    <!-- Pagination Attributes  -->
+
+    <aura:attribute name="PaginationList" type="list"/>
+
+    <aura:attribute name="selectedCount" type="integer" default="0"
+
+                    description="selected Records Count"/>
+
+    <aura:attribute name="startPage" type="Integer" />
+
+    <aura:attribute name="endPage" type="Integer"/>
+
+    <aura:attribute name="totalRecordsCount" type="Integer"/>
+
+    <aura:attribute name="pageSize" type="Integer" default="10" description="number of records to be display on per page"/>
+
+    <aura:attribute name="currentPage" type="integer" default="1"/>
+
+    <aura:attribute name="totalPagesCount" type="integer"/>
+
+    <lightning:card variant="Narrow" title="">
+
+      <aura:if isTrue="{!not(empty(v.showMessage))}">
+
+          <ui:message title="{!v.messageType}" severity="{!v.severity}" closable="true">
+
+              {!v.showMessage}
+
+           </ui:message>
+
+       </aura:if>
+
+      <aura:if isTrue="{!v.showSpinner}">
+
+           <c:showSpinnerCmp show="{!v.showSpinner}"/>
+
+      </aura:if>
+
+      <aura:if isTrue="{!v.isAccountEditable}">
+
+        <lightning:button label="Add Relationship" class="slds-button_brand" onclick="{!c.addNewRelationship}"  />
+
+      </aura:if><br/><br/>
+
+      <aura:if isTrue="{!v.isCreateNew}">
+
+        <table class="slds-table slds-table--cell-buffer headerClass" role="grid">
+
+        <tbody>
+
+            <aura:If isTrue="{!v.accountRelationship.eligibleRelationshipNames != null}">
+
+                <ui:inputSelect aura:id="relNames" label="Type" required="true" change="{!c.onRelChange}" class="slds-select">
+
+                  <aura:iteration items="{!v.accountRelationship.eligibleRelationshipNames}" var="relName">
+
+                      <ui:inputSelectOption text="{!relName}" label="{!relName}"/>
+
+                  </aura:iteration>
+
+                </ui:inputSelect> <br/>
+
+                <c:LookupComponent objectName="Account"
+
+                              fieldSet="['Name','Account_Number__c']"
+
+                              limit="5"
+
+                              comparisonField="['Name','Account_Number__c']"
+
+                              primaryDisplayField="Name"
+
+                              alternateDisplayField="['Account_Number__c']"
+
+                              minimumCharacter="3"
+
+                              lightningIconName="standard:account"
+
+                              uniqueLookupIdentifier="relAccount"
+
+                              lookupId="{!v.selectedToAccount}"
+
+                              readOnly="false"
+
+                              required="true"
+
+                              fieldLabel="Account"
+
+                              whereCondition="{!v.filterCondition}"
+
+                              placeholder="{!v.defaultText}"
+
+                              aura:id="accLookup"
+
+                        />
+
+           </aura:If>
+
+           <aura:If isTrue="{!empty(v.accountRelationship.eligibleRelationshipNames)}">
+
+              <table class="slds-table slds-table--bordered slds-table--cell-buffer headerClass" role="grid">
+
+                  <tr class="slds-align_absolute-center" style="color:red"><b>You can not create relationships for this account due to wrong account type.</b></tr>
+
+              </table>
+
+           </aura:If> 
+
+         </tbody>
+
+        </table>
+
+        <br/>
+
+        <div aura:id="btns" class="slds-align_absolute-center">
+
+            <lightning:button label="Save" class="slds-button_brand" onclick="{!c.saveRelationship}" />
+
+            <lightning:button label="Cancel" class="slds-button_brand" onclick="{!c.cancelAction}"  /><br/>
+
+        </div>
+
+  </aura:if>
+
+    <br/>
+
+    <aura:renderIf isTrue="{!v.isEditRel}">
+
+      <center>
+
+          <ui:button label="Save" class="slds-button_brand" press="{!c.saveEditedRelationships}"/>
+
+          <ui:button label="Cancel" class="slds-button_brand" press="{!c.cancelEditedRelationships}"/>
+
+      </center>
+
+    </aura:renderIf>
+
+    <aura:renderIf isTrue="{!v.isViewRel}">
+
+        <ui:button label="Cancel" class="slds-button_brand" press="{!c.cancelViewRelationship}"/>
+
+        <force:recordView aura:id="view" recordId="{!v.viewRelId}"/>
+
+     <aura:set attribute="else">
+
+       <table class="slds-table slds-table_cell-buffer slds-table_bordered" role="grid">
+
+          <thead>
+
+            <tr class="slds-text-title--caps">
+
+               <th scope="col" class="slds-cell-wrap">
+
+                   <div class="slds-truncate" title="Account Type">From Account</div>
+
+               </th>
+
+               <th scope="col" class="slds-cell-wrap">
+
+                   <div class="slds-truncate" title="Account Type">To Account</div>
+
+               </th>
+
+   <!--        <th scope="col">
+
+                   <div class="slds-truncate" title="Account Type">From Type</div>
+
+               </th>
+
+               <th scope="col">
+
+                   <div class="slds-truncate" title="Account Type">To Type</div>
+
+               </th>  -->
+
+               <th scope="col" class="slds-cell-wrap">
+
+                   <div class="slds-truncate" title="Relationship Name">Relationship Type</div>
+
+               </th>
+
+               <th scope="col" class="slds-cell-wrap">
+
+                   <div class="slds-truncate" title="Account Type">Status</div>
+
+               </th>
+
+               <th scope="col" class="slds-cell-wrap">
+
+                   <div class="slds-truncate" title="Action">Action</div>
+
+               </th>
+
+            </tr>
+
+          </thead>
+
+              <tbody>
+
+                <aura:if isTrue="{!v.accountRelationships.length > 0}">
+
+                  <aura:iteration items="{!v.PaginationList}" var="aRel">
+
+                    <aura:renderIf isTrue="{!aRel.accountNumber != null}">
+
+                      <tr>
+
+                          <td class="slds-cell-wrap">
+
+                              <div class="slds-truncate"><a onclick="{!c.redirectToFromAccount}" id="{!aRel.fromAccountId}" target="_blank">{!aRel.fromAccountName}</a></div>
+
+                          </td>
+
+                          <td class="slds-cell-wrap">
+
+                              <div class="slds-truncate"><a onclick="{!c.redirectToAccount}" id="{!aRel.toAccountId}">{!aRel.toAccountName}</a></div>
+
+                          </td>
+
+         <!--             <td class="slds-cell-wrap">
+
+                              <div class="slds-truncate">{!aRel.fromRelationshipType}</div>
+
+                          </td>
+
+                          <td class="slds-cell-wrap">
+
+                              <div class="slds-truncate">{!aRel.toRelationshipType}</div>
+
+                          </td>  -->
+
+                          <td class="slds-cell-wrap">
+
+                              <div class="slds-truncate">{!aRel.relationshipName}</div>
+
+                          </td>
+
+                          <td class="slds-cell-wrap">
+
+                            <aura:renderIf isTrue="{!v.editRelId == aRel.relId}">
+
+                               <ui:inputSelect aura:id="relStatus"
+
+                                               class="slds-select"
+
+                                               value="{!aRel.status}" >
+
+                                   <ui:inputSelectOption text="Active" value="Active"/>
+
+                                   <ui:inputSelectOption text="Inactive" value="Inactive"/>
+
+                               </ui:inputSelect>
+
+                              <aura:set attribute="else">
+
+                                <div class="slds-truncate">{!aRel.status}</div>
+
+                              </aura:set>
+
+                            </aura:renderIf>
+
+                          </td>
+
+                          <td class="slds-cell-wrap">
+
+                            <aura:if isTrue="{!v.isAccountEditable}">
+
+                              <button type="button" class="slds-button" onclick="{!c.editRelation}" id="{!aRel.relId}" style="text-decoration:underline;">Edit</button>&nbsp;&nbsp;
+
+                            </aura:if>
+
+                            <button type="button" class="slds-button" onclick="{!c.viewRelation}" id="{!aRel.relId}" style="text-decoration:underline;">View</button>
+
+                          </td>
+
+                      </tr>
+
+                    </aura:renderIf>
+
+                  </aura:iteration>
+
+              </aura:if>
+
+              </tbody>
+
+          </table>
+
+        </aura:set>
+
+        </aura:renderIf>
+
+        <aura:renderIf isTrue="{!v.isEditRel}">
+
+          <center>
+
+              <ui:button label="Save" class="slds-button_brand" press="{!c.saveEditedRelationships}"/>
+
+              <ui:button label="Cancel" class="slds-button_brand" press="{!c.cancelEditedRelationships}"/>
+
+          </center>
+
+        </aura:renderIf>
+
+        <aura:if isTrue="{!!v.accountRelationships.length > 0}">
+
+        <table class="slds-table slds-table--bordered slds-table--cell-buffer headerClass" role="grid">
+
+          <tr class="slds-align_absolute-center"> <b>There are no relationships created for this account.</b></tr>
+
+        </table>
+
+        <aura:set attribute="else">
+
+        <!--  Pagination Buttons Start -->
+
+            <div class="slds-align_absolute-center">
+
+                <lightning:button label="Previous"
+
+                                  disabled="{!v.startPage == 0}"
+
+                                  onclick="{!c.navigation}"
+
+                                  variant="brand"
+
+                                  iconName="utility:back"
+
+                                  name="previous"/>
+
+                <span class="slds-badge slds-badge_lightest"
+
+                      style="margin-right: 10px;margin-left: 10px;">
+
+                    Page {!v.currentPage} out of {!v.totalPagesCount}
+
+                </span>
+
+                <lightning:button label="Next"
+
+                                  disabled="{!(v.endPage + 1) >= v.totalRecordsCount}"
+
+                                  onclick="{!c.navigation}"
+
+                                  variant="brand"
+
+                                  iconName="utility:forward"
+
+                                  iconPosition="right"
+
+                                  name="next"/>
+
+            </div>
+
+            <!--  Pagination Buttons End -->
+
+        </aura:set>
+
+       </aura:if>
+
+</lightning:card>
+
+</aura:component>
