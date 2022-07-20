@@ -17,7 +17,7 @@
 
     <actionOverrides>
 
-        <actionName>CallHighlightAction</actionName>
+        <actionName>CallHighlightAction1</actionName>
 
         <formFactor>Large</formFactor>
 
